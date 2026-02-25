@@ -1,0 +1,70 @@
+<div
+  class="canvas-container card rounded-3 overflow-hidden shadow-sm bg-white position-relative"
+  (drop)="onDrop($event)"
+  (dragover)="onDragOver($event)"
+  [style.width.px]="containerWidthPx"
+  [style.height.px]="containerHeightPx"
+>
+  <div class="canvas-inner position-relative w-100 h-100">
+    @for (el of template().elements; track el.id) {
+      <div
+        class="element"
+        [class.element--barcode]="el.type === 'barcode'"
+        [class.element--selected]="selectedId() === el.id"
+        [class.element--dragging]="draggingElementId() === el.id"
+        [class.element--resizing]="resizeState()?.id === el.id"
+        [attr.style]="getElementStyleString(el)"
+        draggable="false"
+        (click)="selectElement(el, $event)"
+        (mousedown)="onElementMouseDown(el, $event)"
+        (dragstart)="onElementDragStart(el, $event)"
+        (dragend)="onElementDragEnd()"
+      >
+        @if (selectedId() === el.id && editingId() !== el.id) {
+          <span class="resize-handle resize-handle--se" (mousedown)="onResizeStart(el, 'se', $event)"
+                title="Resize"></span>
+          <span class="resize-handle resize-handle--sw" (mousedown)="onResizeStart(el, 'sw', $event)"
+                title="Resize"></span>
+          <span class="resize-handle resize-handle--ne" (mousedown)="onResizeStart(el, 'ne', $event)"
+                title="Resize"></span>
+          <span class="resize-handle resize-handle--nw" (mousedown)="onResizeStart(el, 'nw', $event)"
+                title="Resize"></span>
+        }
+        @if (el.type === 'text') {
+          @if (editingId() === el.id) {
+            <span
+              class="element-text element-text--editable"
+              contenteditable="true"
+              [attr.data-editing-id]="el.id"
+              (input)="onTextInput(el, $event)"
+              (blur)="stopEditing()"
+              (click)="$event.stopPropagation()"
+              (keydown.enter)="$event.preventDefault(); stopEditing()"
+              (keydown.escape)="stopEditing()"
+              draggable="false"
+            ></span>
+          } @else {
+            <span
+              class="element-text"
+              (dblclick)="startEditing(el, $event)"
+              (click)="selectElement(el, $event)"
+              draggable="false"
+            >{{ getSampleValue(el) }}</span>
+          }
+        } @else {
+          <img
+            [src]="getBarcodeDataUrl(el)"
+            [alt]="getSampleValue(el)"
+            class="element-barcode-img"
+          />
+        }
+      </div>
+    }
+  </div>
+</div>
+@if (selectedId()) {
+  <button type="button" class="btn btn-sm mt-2 border"
+          style="background: white; color: #dc3545; border-color: #dc3545 !important;" (click)="deleteSelected()">Delete
+    element
+  </button>
+}

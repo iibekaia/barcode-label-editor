@@ -1,0 +1,39 @@
+.palette {
+  width: 220px;
+  min-width: 220px;
+  background: var(--panel-bg, #2d2d2d);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.palette-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary, #b0b0b0);
+}
+
+.palette-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.palette-item {
+  cursor: grab;
+  user-select: none;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover {
+    background: var(--light-blue-hover) !important;
+    border-color: var(--light-blue-accent) !important;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+

@@ -1,0 +1,53 @@
+<div class="card border-light shadow-sm bg-light">
+  <div class="card-header py-2  bg-light border-bottom border-light">
+    <h6 class="mb-0 fw-normal text-dark">Fields</h6>
+  </div>
+  <div class="card-body p-2">
+    <div class="d-flex flex-column gap-3 mb-3">
+      <div>
+        <label class="form-label small fw-normal text-dark mb-1">Name</label>
+        <input type="text" class="form-control form-control-sm border-light" [ngModel]="templateName()" (ngModelChange)="onNameChange($event)" />
+      </div>
+      <div class="d-flex gap-2">
+        <div style="flex: 1;">
+          <label class="form-label small fw-normal text-dark mb-1">Width (mm)</label>
+          <input type="number" class="form-control form-control-sm border-light" min="10" max="200" [ngModel]="widthMm()" (ngModelChange)="onWidthChange(+$event)" />
+        </div>
+        <div style="flex: 1;">
+          <label class="form-label small fw-normal text-dark mb-1">Length (mm)</label>
+          <input type="number" class="form-control form-control-sm border-light" min="10" max="200" [ngModel]="lengthMm()" (ngModelChange)="onLengthChange(+$event)" />
+        </div>
+      </div>
+      <div>
+        <label class="form-label small fw-normal text-dark mb-1">Barcode format</label>
+        <select class="form-select form-select-sm border-light" [ngModel]="barcodeFormat()" (ngModelChange)="onFormatChange($event)">
+          @for (f of formats; track f) {
+            <option [value]="f">{{ f }}</option>
+          }
+        </select>
+      </div>
+    </div>
+    <hr class="my-3 border-light" />
+    <div class="d-flex flex-column gap-2">
+      @for (field of fields; track field.type) {
+        <div
+          class="palette-item d-flex align-items-center gap-2 py-2 px-3 rounded cursor-grab  bg-light border border-light"
+          draggable="true"
+          (dragstart)="onDragStart($event, field)"
+        >
+          <input
+            type="checkbox"
+            class="form-check-input"
+            [checked]="isFieldChecked(field.type)"
+            (change)="onCheckboxChange(field, $event.target.checked)"
+            (click)="$event.stopPropagation()"
+          />
+          <span class="text-dark flex-grow-1">{{ field.label }}</span>
+        </div>
+      }
+    </div>
+    <button type="button" class="btn btn-sm w-100 mt-2 border" style="background: white; color: var(--light-blue-accent); border-color: var(--light-blue-accent) !important;" disabled title="Add property (coming soon)">
+      + Add property
+    </button>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<div class="card border-light shadow-sm mb-3 bg-light">
+  <div class="card-body">
+    <div class="d-flex flex-wrap align-items-end gap-3 mb-0">
+      <button type="button" class="btn btn-sm mt-auto" style="background: var(--light-blue-accent); color: white; border: none;" (click)="print.emit()">
+        Print (A4)
+      </button>
+      <button type="button" class="btn btn-sm mt-auto" style="background: var(--light-blue-accent); color: white; border: none;" (click)="printCard.emit()">
+        Print (card size)
+      </button>
+    </div>
+    @if (textStyle(); as style) {
+      <hr class="my-3 border-light" />
+      <div class="d-flex flex-wrap align-items-end gap-2">
+        <div class="mb-0" style="min-width: 120px;">
+          <label class="form-label small fw-normal text-dark">Font</label>
+          <select class="form-select form-select-sm border-light" [ngModel]="style.fontFamily" (ngModelChange)="onStyleChange({ fontFamily: $event })">
+            <option value="Gilroy, sans-serif">Gilroy</option>
+            <option value="Arial, sans-serif">Arial</option>
+            <option value="'Segoe UI', sans-serif">Segoe UI</option>
+            <option value="sans-serif">Sans-serif</option>
+          </select>
+        </div>
+        <div class="mb-0" style="width: 70px;">
+          <label class="form-label small fw-normal text-dark">Size</label>
+          <select class="form-select form-select-sm border-light" [ngModel]="style.fontSize" (ngModelChange)="onStyleChange({ fontSize: +$event })">
+            @for (s of [10, 12, 14, 16, 18, 20, 24]; track s) {
+              <option [value]="s">{{ s }}</option>
+            }
+          </select>
+        </div>
+        <div class="btn-group btn-group-sm" role="group">
+          <button type="button" class="btn btn-outline-light border-light text-dark" [class.active]="style.bold" [style.background]="style.bold ? 'var(--light-blue-accent)' : 'white'" [style.color]="style.bold ? 'white' : 'var(--text-dark)'" (click)="onStyleChange({ bold: !style.bold })" title="Bold">B</button>
+          <button type="button" class="btn btn-outline-light border-light text-dark" [class.active]="style.italic" [style.background]="style.italic ? 'var(--light-blue-accent)' : 'white'" [style.color]="style.italic ? 'white' : 'var(--text-dark)'" (click)="onStyleChange({ italic: !style.italic })" title="Italic">I</button>
+          <button type="button" class="btn btn-outline-light border-light text-dark" [class.active]="style.underline" [style.background]="style.underline ? 'var(--light-blue-accent)' : 'white'" [style.color]="style.underline ? 'white' : 'var(--text-dark)'" (click)="onStyleChange({ underline: !style.underline })" title="Underline">U</button>
+          <button type="button" class="btn btn-outline-light border-light text-dark" [class.active]="style.strikethrough" [style.background]="style.strikethrough ? 'var(--light-blue-accent)' : 'white'" [style.color]="style.strikethrough ? 'white' : 'var(--text-dark)'" (click)="onStyleChange({ strikethrough: !style.strikethrough })" title="Strikethrough">S</button>
+        </div>
+        <div class="btn-group btn-group-sm" role="group">
+          <button type="button" class="btn btn-outline-light border-light text-dark" [class.active]="style.align === 'left'" [style.background]="style.align === 'left' ? 'var(--light-blue-accent)' : 'white'" [style.color]="style.align === 'left' ? 'white' : 'var(--text-dark)'" (click)="onStyleChange({ align: 'left' })" title="Align left">⬅</button>
+          <button type="button" class="btn btn-outline-light border-light text-dark" [class.active]="style.align === 'center'" [style.background]="style.align === 'center' ? 'var(--light-blue-accent)' : 'white'" [style.color]="style.align === 'center' ? 'white' : 'var(--text-dark)'" (click)="onStyleChange({ align: 'center' })" title="Align center">⬌</button>
+          <button type="button" class="btn btn-outline-light border-light text-dark" [class.active]="style.align === 'right'" [style.background]="style.align === 'right' ? 'var(--light-blue-accent)' : 'white'" [style.color]="style.align === 'right' ? 'white' : 'var(--text-dark)'" (click)="onStyleChange({ align: 'right' })" title="Align right">➡</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
