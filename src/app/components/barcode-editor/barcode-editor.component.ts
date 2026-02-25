@@ -52,7 +52,7 @@ export class BarcodeEditorComponent {
 
   getElementStyle(element: LabelElement): Record<string, string> {
     const style: Record<string, string> = {
-      position: 'absolute',
+      position: 'relative',
       left: `${element.left}%`,
       top: `${element.top}%`,
       width: `${element.width}%`,
@@ -126,7 +126,7 @@ export class BarcodeEditorComponent {
       top,
       width: widthPct,
       height: heightPct,
-      style: !isBarcode ? { ...DEFAULT_TEXT_STYLE } : undefined,
+      style: !isBarcode ? {...DEFAULT_TEXT_STYLE} : undefined,
       sampleValue: field.label
     };
 
@@ -175,6 +175,7 @@ export class BarcodeEditorComponent {
     this.appliedTemplate.set(template);
     // console.log('Generated Label Template:', JSON.stringify(template, null, 2));
   }
+
   onPrint(): void {
     const original: string = document.body!.innerHTML;
     document.body!.innerHTML =
@@ -185,18 +186,8 @@ export class BarcodeEditorComponent {
   }
 
   onPrintCard(): void {
-    const area = this.printAreaRef()?.nativeElement;
-    if (!area) return;
-
+    const original: string = document.body!.innerHTML;
     const template = this.appliedTemplate() ?? this.template();
-
-    const cards = Array.from(area.querySelectorAll('.card')) as HTMLElement[];
-    if (!cards.length) return;
-
-    const pagesHtml = cards
-      .map((card) => `<div class="print-page">${card.outerHTML}</div>`)
-      .join('');
-
     const style = `
       <style>
         @page {
@@ -206,10 +197,10 @@ export class BarcodeEditorComponent {
         @media print {
           body {
             margin: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
           }
-          .print-page {
-            width: 100%;
-            height: 100%;
+          .col {
             page-break-after: always;
             break-after: page;
             display: flex;
@@ -217,27 +208,30 @@ export class BarcodeEditorComponent {
             justify-content: center;
           }
         }
-        .print-page .card {
-          margin: 0;
-          box-shadow: none;
-          border: none;
+
+        .print-page {
+          /*visibility: hidden;*/
+        }
+        /* Make sure cards expand completely inside the print bounds */
+        .col .card {
+          margin: 0 !important;
+          box-shadow: none !important;
+          border: none !important;
+          position: relative !important;
+          border-radius: 0 !important;
         }
       </style>
     `;
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
 
-    printWindow.document.open();
-    printWindow.document.write(
-      '<!doctype html><html><head><title>Print labels</title>' +
-      style +
-      '</head><body>' +
-      pagesHtml +
-      '</body></html>'
-    );
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
+    document.body!.innerHTML = '<!doctype html><html><head><title>Print labels</title>' +
+    style +
+    '</head><body>' +
+    (this.printAreaRef()?.nativeElement?.outerHTML ?? '') +
+    '</body></html>'
+
+
+    window.print();
+    document.body.innerHTML = original;
+    window.location.reload();
   }
 }
