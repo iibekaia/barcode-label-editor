@@ -1,5 +1,4 @@
 import {Component, signal, computed, inject} from '@angular/core';
-import {NgStyle} from '@angular/common';
 import {FieldPaletteComponent} from '../field-palette/field-palette.component';
 import {EditorToolbarComponent} from '../editor-toolbar/editor-toolbar.component';
 import {LabelCanvasComponent} from '../label-canvas/label-canvas.component';
@@ -19,7 +18,7 @@ import {DEFAULT_TEXT_STYLE} from '../../models/label-template';
 @Component({
   selector: 'app-barcode-editor',
   standalone: true,
-  imports: [NgStyle, FieldPaletteComponent, EditorToolbarComponent, LabelCanvasComponent],
+  imports: [FieldPaletteComponent, EditorToolbarComponent, LabelCanvasComponent],
   templateUrl: './barcode-editor.component.html',
   styleUrl: './barcode-editor.component.scss'
 })
