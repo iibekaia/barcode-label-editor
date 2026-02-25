@@ -30,7 +30,7 @@ export class PdfGeneratorService {
       this.renderLabel(doc, template, product, 0, 0);
     });
 
-    doc.save(`labels-${template.name}.pdf`);
+    this.printPdf(doc);
   }
 
   generateA4Pdf(template: LabelTemplate, items: BarcodeLabelItem[]): void {
@@ -63,7 +63,18 @@ export class PdfGeneratorService {
       this.renderLabel(doc, template, product, x, y);
     });
 
-    doc.save(`labels-A4-${template.name}.pdf`);
+    this.printPdf(doc);
+  }
+
+  private printPdf(doc: jsPDF): void {
+    const blobUrl = doc.output('bloburl') as unknown as string;
+    const printWindow = window.open(blobUrl, '_blank');
+    if (printWindow) {
+      printWindow.addEventListener('load', () => {
+        printWindow.focus();
+        printWindow.print();
+      });
+    }
   }
 
   private renderLabel(
