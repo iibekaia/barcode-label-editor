@@ -1,10 +1,11 @@
-import {Component, signal, computed, viewChild, ElementRef, inject} from '@angular/core';
+import {Component, signal, computed, inject} from '@angular/core';
 import {NgStyle} from '@angular/common';
 import {FieldPaletteComponent} from '../field-palette/field-palette.component';
 import {EditorToolbarComponent} from '../editor-toolbar/editor-toolbar.component';
 import {LabelCanvasComponent} from '../label-canvas/label-canvas.component';
 import {LabelGeneratorService} from '../../services/label-generator.service';
 import {BarcodeGeneratorService} from '../../services/barcode-generator.service';
+import {PdfGeneratorService} from '../../services/pdf-generator.service';
 import {
   LabelTemplate,
   LabelElement,
@@ -25,7 +26,7 @@ import {DEFAULT_TEXT_STYLE} from '../../models/label-template';
 export class BarcodeEditorComponent {
   private labelGenerator = inject(LabelGeneratorService);
   private barcodeGenerator = inject(BarcodeGeneratorService);
-  private printAreaRef = viewChild<ElementRef<HTMLElement>>('printArea');
+  private pdfGenerator = inject(PdfGeneratorService);
   readonly template = signal<LabelTemplate>({...DEFAULT_TEMPLATE, id: crypto.randomUUID()});
   readonly selectedId = signal<string | null>(null);
   readonly appliedTemplate = signal<LabelTemplate | null>(null);
@@ -177,61 +178,12 @@ export class BarcodeEditorComponent {
   }
 
   onPrint(): void {
-    const original: string = document.body!.innerHTML;
-    document.body!.innerHTML =
-      this.printAreaRef()?.nativeElement?.outerHTML ?? '';
-    window.print();
-    document.body.innerHTML = original;
-    window.location.reload();
+    const template = this.appliedTemplate() ?? this.template();
+    this.pdfGenerator.generateA4Pdf(template, this.labelItems);
   }
 
   onPrintCard(): void {
-    const original: string = document.body!.innerHTML;
     const template = this.appliedTemplate() ?? this.template();
-    const style = `
-      <style>
-        @page {
-          size: ${template.widthMm}mm ${template.lengthMm}mm;
-          margin: 0;
-        }
-        @media print {
-          body {
-            margin: 0;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-          }
-          .col {
-            page-break-after: always;
-            break-after: page;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
-        }
-
-        .print-page {
-          /*visibility: hidden;*/
-        }
-        /* Make sure cards expand completely inside the print bounds */
-        .col .card {
-          margin: 0 !important;
-          box-shadow: none !important;
-          border: none !important;
-          position: relative !important;
-          border-radius: 0 !important;
-        }
-      </style>
-    `;
-
-    document.body!.innerHTML = '<!doctype html><html><head><title>Print labels</title>' +
-    style +
-    '</head><body>' +
-    (this.printAreaRef()?.nativeElement?.outerHTML ?? '') +
-    '</body></html>'
-
-
-    window.print();
-    document.body.innerHTML = original;
-    window.location.reload();
+    this.pdfGenerator.generateCardSizePdf(template, this.labelItems);
   }
 }
