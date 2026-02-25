@@ -68,13 +68,15 @@ export class PdfGeneratorService {
 
   private printPdf(doc: jsPDF): void {
     const blobUrl = doc.output('bloburl') as unknown as string;
-    const printWindow = window.open(blobUrl, '_blank');
-    if (printWindow) {
-      printWindow.addEventListener('load', () => {
-        printWindow.focus();
-        printWindow.print();
-      });
-    }
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = blobUrl;
+    document.body.appendChild(iframe);
+    iframe.addEventListener('load', () => {
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+      iframe.addEventListener('afterprint', () => iframe.remove(), { once: true });
+    });
   }
 
   private renderLabel(
